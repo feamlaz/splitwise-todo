@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Smurf</title>
+    <script src="supabase-config.js"></script>
+</head>
+<body>
+    <h1>Тест Supabase</h1>
+    <div id="status"></div>
+    
+    <script>
+        async function testSupabase() {
+            const status = document.getElementById('status');
+            
+            try {
+                // Загружаем Supabase
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+                script.onload = async () => {
+                    const { createClient } = window.supabase;
+                    const supabase = createClient(
+                        window.SUPABASE_CONFIG.url,
+                        window.SUPABASE_CONFIG.anonKey
+                    );
+                    
+                    status.innerHTML = '<p>✅ Supabase загружен успешно</p>';
+                    
+                    // Тест подключения
+                    const { data, error } = await supabase.from('tasks').select('count');
+                    if (error) {
+                        status.innerHTML += `<p>❌ Ошибка: ${error.message}</p>`;
+                    } else {
+                        status.innerHTML += '<p>✅ Подключение к базе данных работает</p>';
+                    }
+                };
+                document.head.appendChild(script);
+            } catch (error) {
+                status.innerHTML = `<p>❌ Ошибка: ${error.message}</p>`;
+            }
+        }
+        
+        testSupabase();
+    </script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "name": "smurf-todo-app",
+  "version": "1.0.0",
+  "description": "Advanced To-Do List Application with Liquid Glass design",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "build": "echo 'Build complete'"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.38.4"
+  },
+  "devDependencies": {},
+  "keywords": [
+    "todo",
+    "productivity",
+    "pwa",
+    "liquid-glass"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}

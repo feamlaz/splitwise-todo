@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smurf - To-Do List App</title>
+    <meta name="description" content="Advanced To-Do List application with Liquid Glass design">
+    <meta name="theme-color" content="#3498db">
+    <meta name="background-color" content="#1e3c72">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Smurf">
+    <meta name="application-name" content="Smurf">
+    <meta name="msapplication-TileColor" content="#3498db">
+    <meta name="msapplication-config" content="/browserconfig.xml">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="favicon.svg">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Левая панель -->
+        <aside class="sidebar-left">
+            <div class="sidebar-section">
+                <h3>👥 Исполнители</h3>
+                <div id="assigneesList" class="assignees-list"></div>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3>🏷️ Быстрые фильтры</h3>
+                <div id="quickFilters" class="quick-filters"></div>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3>🔥 Горящие задачи</h3>
+                <div id="urgentTasks" class="urgent-tasks"></div>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3>📝 Быстрые заметки</h3>
+                <textarea id="quickNotes" placeholder="Быстрые заметки..." class="quick-notes"></textarea>
+            </div>
+        </aside>
+        
+        <!-- Основной контент -->
+        <main class="main-content">
+            <header class="app-header">
+                <div class="header-content">
+                    <div class="header-left">
+                        <h1 class="app-title">🌊 Smurf</h1>
+                        <p class="author">by Feamlaz</p>
+                    </div>
+                    <div class="header-right">
+                        <div id="authSection" style="display: none;">
+                            <span id="userEmail" class="user-email"></span>
+                            <button id="logoutBtn" class="auth-btn">🚪 Выйти</button>
+                        </div>
+                        <div id="loginSection">
+                            <button id="loginBtn" class="auth-btn">🔐 Войти</button>
+                            <button id="registerBtn" class="auth-btn">📝 Регистрация</button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <div class="add-section">
+                <button id="addTaskBtn"><span>➕ Добавить задачу</span></button>
+                <div class="search-section">
+                    <input type="text" id="searchInput" placeholder="🔍 Поиск по исполнителю...">
+                </div>
+                <div class="stats-overview">
+                    <div class="stat-card">
+                        <span class="stat-number" id="totalTasks">0</span>
+                        <span class="stat-label">Всего задач</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="completedToday">0</span>
+                        <span class="stat-label">Выполнено сегодня</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="overdueTasks">0</span>
+                        <span class="stat-label">Просрочено</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tasks-container">
+                <div class="filter-section">
+                    <button class="filter-btn active" data-filter="all">📋 Все</button>
+                    <button class="filter-btn" data-filter="active">⚡ Активные</button>
+                    <button class="filter-btn" data-filter="paused">⏸️ На паузе</button>
+                    <button class="filter-btn" data-filter="completed">✅ Завершенные</button>
+                </div>
+                
+                <div class="project-section">
+                    <select id="projectFilter">
+                        <option value="all">Все проекты</option>
+                        <option value="work">Работа</option>
+                        <option value="personal">Личное</option>
+                        <option value="study">Учеба</option>
+                        <option value="health">Здоровье</option>
+                    </select>
+                    <input type="text" id="tagSearch" placeholder="🏷️ Поиск по тегам...">
+                </div>
+                
+                <ul id="taskList"></ul>
+                
+                <div class="stats">
+                    <span id="taskCount">0 задач</span>
+                    <div class="stats-actions">
+                        <button id="clearCompleted">Удалить завершенные</button>
+                        <button id="exportBtn">📥 Экспорт</button>
+                        <button id="settingsBtn">⚙️ Настройки</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- Правая панель -->
+        <aside class="sidebar-right">
+            <div class="sidebar-section">
+                <h3>📊 Статистика</h3>
+                <div class="chart-container">
+                    <canvas id="tasksChart" width="200" height="150"></canvas>
+                </div>
+                <div class="stats-grid">
+                    <div class="mini-stat">
+                        <span class="mini-stat-number" id="weeklyProgress">0%</span>
+                        <span class="mini-stat-label">Прогресс недели</span>
+                    </div>
+                    <div class="mini-stat">
+                        <span class="mini-stat-number" id="productivityScore">0</span>
+                        <span class="mini-stat-label">Продуктивность</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3>📅 Календарь</h3>
+                <div id="miniCalendar" class="mini-calendar"></div>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3>🎮 Достижения</h3>
+                <div id="achievements" class="achievements"></div>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3>⚡ Быстрые действия</h3>
+                <div class="quick-actions">
+                    <button id="quickAddBtn" class="quick-action-btn">➕ Быстрая задача</button>
+                    <button id="importBtn" class="quick-action-btn">📥 Импорт</button>
+                    <button id="themeBtn" class="quick-action-btn">🎨 Тема</button>
+                    <button id="notificationsBtn" class="quick-action-btn">🔔 Уведомления</button>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3>🌤️ Инфо</h3>
+                <div class="info-widget">
+                    <div class="info-item">
+                        <span class="info-label">Время:</span>
+                        <span class="info-value" id="currentTime">00:00</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Дата:</span>
+                        <span class="info-value" id="currentDate">01.01.2024</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Статус:</span>
+                        <span class="info-value status-active">🟢 Активен</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+    
+    <div id="taskModal" class="modal">
+        <div class="modal-content">
+            <h3>Новая задача</h3>
+            <input type="text" id="taskTitleInput" placeholder="Название задачи...">
+            <textarea id="taskDescriptionInput" placeholder="Описание задачи..."></textarea>
+            <input type="datetime-local" id="taskDateTimeInput">
+            <select id="taskPriorityInput">
+                <option value="low">Низкий приоритет</option>
+                <option value="medium" selected>Средний приоритет</option>
+                <option value="high">Высокий приоритет</option>
+            </select>
+            <select id="taskProjectInput">
+                <option value="work">Работа</option>
+                <option value="personal" selected>Личное</option>
+                <option value="study">Учеба</option>
+                <option value="health">Здоровье</option>
+            </select>
+            <input type="text" id="taskTagsInput" placeholder="🏷️ Теги (через запятую)...">
+            <input type="text" id="taskAssigneeInput" placeholder="Исполнитель задачи...">
+            <div class="repeat-section">
+                <label>
+                    <input type="checkbox" id="taskRepeatCheckbox">
+                    <span>Повторять задачу</span>
+                </label>
+                <select id="taskRepeatInput" style="display:none;">
+                    <option value="daily">Ежедневно</option>
+                    <option value="weekly">Еженедельно</option>
+                    <option value="monthly">Ежемесячно</option>
+                </select>
+            </div>
+            <div class="modal-buttons">
+                <button id="saveTaskBtn">Сохранить</button>
+                <button id="cancelTaskBtn">Отмена</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <h3>Редактировать задачу</h3>
+            <input type="text" id="editTaskInput" placeholder="Название задачи...">
+            <textarea id="editTaskDescriptionInput" placeholder="Описание задачи..."></textarea>
+            <input type="datetime-local" id="editTaskDateTime">
+            <select id="editTaskPriority">
+                <option value="low">Низкий приоритет</option>
+                <option value="medium">Средний приоритет</option>
+                <option value="high">Высокий приоритет</option>
+            </select>
+            <select id="editTaskProject">
+                <option value="work">Работа</option>
+                <option value="personal">Личное</option>
+                <option value="study">Учеба</option>
+                <option value="health">Здоровье</option>
+            </select>
+            <input type="text" id="editTaskTagsInput" placeholder="🏷️ Теги (через запятую)...">
+            <input type="text" id="editTaskAssigneeInput" placeholder="Исполнитель задачи...">
+            <div class="repeat-section">
+                <label>
+                    <input type="checkbox" id="editTaskRepeatCheckbox">
+                    <span>Повторять задачу</span>
+                </label>
+                <select id="editTaskRepeatInput" style="display:none;">
+                    <option value="daily">Ежедневно</option>
+                    <option value="weekly">Еженедельно</option>
+                    <option value="monthly">Ежемесячно</option>
+                </select>
+            </div>
+            <div class="modal-buttons">
+                <button id="saveEditBtn">Сохранить</button>
+                <button id="cancelEditBtn">Отмена</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Модальное окно аутентификации -->
+    <div id="authModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3 id="authTitle">🔐 Вход в Smurf</h3>
+            <form id="authForm">
+                <input type="email" id="authEmail" placeholder="Email" required>
+                <input type="password" id="authPassword" placeholder="Пароль" required>
+                <div class="modal-buttons">
+                    <button type="submit" id="authSubmitBtn">Войти</button>
+                    <button type="button" id="authCancelBtn">Отмена</button>
+                </div>
+            </form>
+            <div class="auth-switch">
+                <span id="authSwitchText">Нет аккаунта? <a href="#" id="authSwitchLink">Зарегистрироваться</a></span>
+            </div>
+        </div>
+    </div>
+    
+    <script src="supabase-config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+</body>
+</html>
